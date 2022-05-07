@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+	<title></title>
+	<link rel="stylesheet" type="text/css" href="css/SA_swifter.css">	
+</head>
+<body style="padding: 156px;">
+<div  class="swift">
+	<div class="t-menu">menu</div>
+	<div id="round-tab"  class="main-tabs">		
+		<div class="tabsI t-active">Nicare</div>	
+		<div class="tabsI" >huwe</div>			
+		<div class="tabsI" >huwe</div>			
+		<div class="tabsI" >huwe</div>			
+		<div class="tabsI" >huwe</div>			
+	</div>
+</div>
+<button id="click">click me</button>
+<script type="text/javascript" src="js/jquery-1.10.2.js"></script>
+<script type="text/javascript" src="js/SA_swifter.js"></script>
+<script>
+	
+	
+	var switf = new SA_SwiftMenu($('.t-menu'),100,$('#round-tab'),$('.tabsI'));
+	switf.switf();
+	switf.clickOutside();
+</script>
+</body>
+</html>

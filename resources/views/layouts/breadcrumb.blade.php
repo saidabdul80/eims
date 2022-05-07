@@ -1,0 +1,1 @@
+<div class="page-breadcrumb" style="padding:1px 5px !important;" ><h2 style="color:#999 !important;">@yield('breadcrumb')</h2></div>

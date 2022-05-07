@@ -1,0 +1,40 @@
+@charset "utf-8";
+/* CSS Document */
+
+.classmavex{
+	position:fixed;
+	z-index:99;
+	top:0;
+	left:0;
+	height:100%;
+	width:100%;
+	background:white;
+	display:flex;
+	justify-content:center;
+	align-items: center;
+}
+
+. classmavex >img{
+	width:100%;
+}
+. classmavex.hidden{
+	animation: fideout 1s;
+	animation-fill-mode: forwards;
+}
+
+@keyframes fideout {
+	100%{
+		opacity:0;
+		visibility:hidden;	
+	}
+}	
+
+    #scroll{
+ 		 max-height: 500px;
+ 		 overflow-y: scroll;
+		}
+		
+    #scroll_2{
+ 		 max-height: 570px;
+ 		 overflow-y: scroll;
+		}
