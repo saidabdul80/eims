@@ -2,7 +2,8 @@
 
 <div id="payStackApp" class="d-inline-block">
     <input type="text" name="amount" :value="amount" style="display:none;">
-    <button type="button" class="btn btn-success" @click="payWithPaystack()"> Use PayStack @{{totalNumber*amount}} </button>
+    <button v-if="totalNumber > 0" type="button" class="btn btn-success" @click="payWithPaystack()"> Use PayStack @{{totalNumber*amount}} </button>
+    <button v-else class="btn btn-success text-white" type="submit">Update Student</button>
 </div>
 
 

@@ -107,7 +107,8 @@ Route::group(['middleware' => ['login.auth']], function() {
   Route::post('add_update_session/', 'appsController@addUpdateSession')->name('add_update_session'); 
   Route::get('set_session/', 'appsController@setSession')->name('set_session'); 
   Route::get('delete_session/', 'appsController@deleteSession')->name('delete_session');
-
+  Route::post('students_inventory_checker/', 'appsController@studentsInventoryChecker')->name('students_inventory_checker');
+  
 
   Route::get('assign_tpa/', 'appsController@indexAssignTpa')->name('assign_tpa'); 
   Route::get('tpas/{start}/{length}/{search?}', 'appsController@allTpas')->name('tpas'); 

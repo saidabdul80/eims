@@ -138,7 +138,9 @@ if(isset($_COOKIE['btn-type'])) {
                         
                     </div>
                     @include('layouts.paymentForm')
-                    <button type="submit" class="btn btn-primary">Pay & Continue</button>
+                    <div id="listFilex">
+                        <button v-if="totalNumber > 0" type="submit" class="btn btn-primary">Pay & Continue</button>
+                    </div>
                 </div>
                 
                 </form>
@@ -382,9 +384,19 @@ this.parseExcel = function (file, callback) {
         return 0;
     }
 
-    var XL_row_object = XLSX.utils.sheet_to_html(workbook.Sheets[sheetsname]);
-    //console.log(XL_row_object);
-    callback(XL_row_object);
+    //check student payments
+
+    $.ajax({
+        url: '{{route("students_inventory_checker")}}',
+        data:{obj:Obj,'_token':'{{csrf_token()}}', session_id: $("#session_id").val(),institution_id:$("#institution_id").val()},
+        method: 'POST',
+    }).done(function(res) {     
+        //console.log(res)     
+        numberInSheet = res.unpaid;
+        var XL_row_object = XLSX.utils.sheet_to_html(workbook.Sheets[sheetsname]);
+        //console.log(XL_row_object);
+        callback(XL_row_object);
+    })  
 
     //var json_object = JSON.stringify(XL_row_object.push({col:col}));        
     //console.log(XL_row_object)
@@ -414,10 +426,15 @@ function lisExceltContent(file){
         var vueItem = Vue.createApp({
             created(){
                 store.commit('totalNumber', numberInSheet) //2000 is amount per student
+            },
+            computed: {
+                totalNumber: function () {
+                    return  store.getters.totalNumber
+                },
             }
 
         });
-        vueItem.mount("#listFileContent");        
+        vueItem.mount("#listFilex");        
     });
 }
 const dropArea = document.querySelector(".drag-area"),

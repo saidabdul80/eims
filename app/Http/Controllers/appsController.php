@@ -233,33 +233,33 @@ class appsController extends Controller
             $students = DB::table('tiship_enrollee_histories', 't')->rightJoin('tbl_tiship_enrollees',"t.tiship_enrollee_id","=", "tbl_tiship_enrollees.id")->where($searchParam)->where(function($query)use ($search){
                 $query->orWhere("matric_number","like", "%$search%")->orWhere("first_name","like", "%$search%")->orWhere("surname","like", "%$search%")->orWhere("other_name","like", "%$search%")->orWhere("department","like", "$search")->orWhere("faculty","like", "$search");
             })->paginate(500);                      
-        }    
-   
-        $students = json_decode(json_encode($students));
+        }       
         $session = Sessions::where('id', $session_id)->first();
-        $data = ['institutions'=>$this->institutions, 'students'=>$students, "session"=>$session];        
+        $data = ['institutions'=>$this->institutions, 'students'=>$students, "session"=>$session];   
+        session('students',$students);     
         return view('institution.manage_institution')->with('data',$data);
     }
     
     public function uploadStudents(Request $request){      
         $file = $request->file;
         $ref = json_decode($request->ref);
-           
-        $payment_type = $request->get('payment_type');
-        $amount = $request->get('amount');
-        $payment_date = date("y-m-d");
-        $payment_status = $ref->status;
-        $payment_initiator = session('user_data')->id;
-        $paid_by = session('user_data')->id;
-        $payment_reference = $ref->reference;
-        $payment_method = $ref->method ?? "-";
+        
+        if($ref != null){
+            $payment_type = $request->get('payment_type');
+            $amount = $request->get('amount');
+            $payment_date = date("y-m-d");
+            $payment_status = $ref->status;
+            $payment_initiator = session('user_data')->id;
+            $paid_by = session('user_data')->id;
+            $payment_reference = $ref->reference;
+            $payment_method = $ref->method ?? "-";            
+        }
       
 
         $validator = Validator::make($request->all(), [
             'file' => ['required', "mimes:text,csv"],
             'session_id' => 'required',
-            'institution_id'=>'required',
-            'ref'=>'required'
+            'institution_id'=>'required',            
         ]);
         $session_id = (int) $request->get('session_id');        
         $institution_id = (int) $request->get('institution_id');        
@@ -318,33 +318,35 @@ class appsController extends Controller
                                 "institution_id" => $institution_id,
                                 "session_id" => $session_id
                             ]);
+                            if($ref != null){
 
-                            $saveInventory =  DB::table('tiship_inventories')->updateOrInsert([
-                                "institution_id" => $institution_id,                               
-                                "enrollee_id" => $enrollee_id,
-                                "session" =>  $session_id,
-                                "payment_status" => 'success',
-                            ],[
-                                "institution_id" =>  $institution_id, 
-                                "enrollee_id" =>  $enrollee_id, 
-                                "payment_type" =>  $payment_type, 
-                                "amount" =>  $amount, 
-                                "payment_date" =>  $payment_date, 
-                                "payment_status" =>  $payment_status, 
-                                "payment_initiator" =>  $payment_initiator, 
-                                "paid_by" =>  $paid_by, 
-                                "payment_reference" =>  $payment_reference, 
-                                "payment_method" =>  $payment_method, 
-                                "session" => $session_id,
-                            ]);
-
+                                $saveInventory =  DB::table('tiship_inventories')->updateOrInsert([
+                                    "institution_id" => $institution_id,                               
+                                    "enrollee_id" => $enrollee_id,
+                                    "session" =>  $session_id,
+                                    "payment_status" => 'success',
+                                ],[
+                                    "institution_id" =>  $institution_id, 
+                                    "enrollee_id" =>  $enrollee_id, 
+                                    "payment_type" =>  $payment_type, 
+                                    "amount" =>  $amount, 
+                                    "payment_date" =>  $payment_date, 
+                                    "payment_status" =>  $payment_status, 
+                                    "payment_initiator" =>  $payment_initiator, 
+                                    "paid_by" =>  $paid_by, 
+                                    "payment_reference" =>  $payment_reference, 
+                                    "payment_method" =>  $payment_method, 
+                                    "session" => $session_id,
+                                ]);
+                            
+                            }
                             if(!$saveHistory){
                                 DB::rollBack();
                             }
-                            $newStudents .= "Created: ".$user['matric_number']. ', <br>';
+                            $newStudents .= "Created: ".$user['matric_number']. ' <br>';
                         }else{
                             //return dd($chk);
-                            $exists .= 'Duplicate: ' .$user['matric_number']. ', <br>';                                            
+                            $exists .= 'Duplicate: ' .$user['matric_number']. ' <br>';                                            
                         }                   
                    /*  }else{
 
@@ -380,31 +382,32 @@ class appsController extends Controller
                         "session_id" => $session_id
                     ]);  
                     
-                    
-                    $saveInventory =  DB::table('tiship_inventories')->updateOrInsert([
-                        "institution_id" => $institution_id,                               
-                        "enrollee_id" => $enrollee_id,
-                        "session" =>  $session_id,
-                        "payment_status" => 'success',
-                    ],[
-                        "institution_id" =>  $institution_id, 
-                        "enrollee_id" =>  $enrollee_id, 
-                        "payment_type" =>  $payment_type, 
-                        "amount" =>  $amount, 
-                        "payment_date" =>  $payment_date, 
-                        "payment_status" =>  $payment_status, 
-                        "payment_initiator" =>  $payment_initiator, 
-                        "paid_by" =>  $paid_by, 
-                        "payment_reference" =>  $payment_reference, 
-                        "payment_method" =>  $payment_method, 
-                        "session" => $session_id,
-                    ]);
+                    if($ref != null){
+                        $saveInventory =  DB::table('tiship_inventories')->updateOrInsert([
+                            "institution_id" => $institution_id,                               
+                            "enrollee_id" => $enrollee_id,
+                            "session" =>  $session_id,
+                            "payment_status" => 'success',
+                        ],[
+                            "institution_id" =>  $institution_id, 
+                            "enrollee_id" =>  $enrollee_id, 
+                            "payment_type" =>  $payment_type, 
+                            "amount" =>  $amount, 
+                            "payment_date" =>  $payment_date, 
+                            "payment_status" =>  $payment_status, 
+                            "payment_initiator" =>  $payment_initiator, 
+                            "paid_by" =>  $paid_by, 
+                            "payment_reference" =>  $payment_reference, 
+                            "payment_method" =>  $payment_method, 
+                            "session" => $session_id,
+                        ]);                        
+                    }
 
 
                     if(!$saveHistory){
                         DB::rollBack();
                     }                                 
-                    $newStudents .='Updated: '. $user['matric_number']. ', <br>';                      
+                    $newStudents .='Updated: '. $user['matric_number']. ' <br>';                      
                 }             
                 DB::commit();
             }
@@ -425,6 +428,26 @@ class appsController extends Controller
         </tr>
         </div>
     </table>");
+    }
+    public function studentsInventoryChecker(Request $request){
+        $session_id = $request->get('session_id');
+        $institution_id = $request->get('institution_id');
+        $students = $request->get('obj');
+        $index = 0;
+        $unpaid = $paid = 0;
+        foreach($students as $student){
+            if($index != 0){
+                $matric_number = $student[2];
+                $user = DB::table('tbl_tiship_enrollees','t')->join('tiship_inventories','tiship_inventories.enrollee_id','=','t.enrolment_number')->where(['t.matric_number'=>$matric_number,'tiship_inventories.session'=>$session_id, 'tiship_inventories.institution_id'=>$institution_id ])->first();
+                if(!$user){
+                    $unpaid++;
+                }else{
+                    $paid++;
+                }
+            }
+            $index++;
+        }
+        return response()->json(["paid"=>$paid,"unpaid"=>$unpaid], 200);
     }
 
     private function fileToArray($filename = '', $delimiter = ',')
