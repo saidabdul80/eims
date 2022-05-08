@@ -13,6 +13,7 @@ use Validator,Redirect,Response;
 use JWTAuth;
 
 use App\User;
+use App\Sessions;
 
 use Illuminate\Support\Str;
 
@@ -112,7 +113,7 @@ class userController extends Controller
 
         ])->fromUser($user);
 
-
+        $current_session = Sessions::where('is_current','!=', Null)->first();      
 
 
 
@@ -126,7 +127,9 @@ class userController extends Controller
 
             'user_menus' => $this->user_menus($user->id),
 
-            'session_id'=>$request->session()->regenerate()
+            'session_id'=>$request->session()->regenerate(),
+            
+            'current_session'=> $current_session
 
             ]);
 

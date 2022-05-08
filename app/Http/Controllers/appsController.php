@@ -203,7 +203,8 @@ class appsController extends Controller
         })->where('t.session_id',$session->id)->paginate(500);
 
         $students = json_decode(json_encode($students));
-        $data = ['institutions'=>$this->institutions, 'students'=>$students, "mode"=>false, "session"=>$session];        
+        $selected_institution = 1;
+        $data = ['institutions'=>$this->institutions, 'students'=>$students, "mode"=>false, "session"=>$session,'selected_institution'=> $selected_institution];        
         return view('institution.manage_institution')->with('data',$data);
     }
     
@@ -235,7 +236,7 @@ class appsController extends Controller
             })->paginate(500);                      
         }       
         $session = Sessions::where('id', $session_id)->first();
-        $data = ['institutions'=>$this->institutions, 'students'=>$students, "session"=>$session];   
+        $data = ['institutions'=>$this->institutions, 'students'=>$students, "session"=>$session,'selected_institution'=> $institution_id];   
         session('students',$students);     
         return view('institution.manage_institution')->with('data',$data);
     }

@@ -2,7 +2,7 @@
 //dd(env("PAY_STACK_KEY"));
 $amountToPay =0;
 use App\Sessions;
-
+use Illuminate\Support\Facades\DB;
 use App\Institution;
 
 $sessions = Sessions::all();
@@ -45,13 +45,13 @@ if(isset($_COOKIE['btn-type'])) {
                 <button class="my-1 mx-1 btn-light btn btn-md text-dark {{ $page!='edit'?'':'active' }} panelBtn" btn-type="edit" >Institutions</button>
             </center>
         </div>
-        <div class="offset-md-1 col-md-5 w-100 jumbotron p-2 mb-0" style="font-size:">            
+        <div class="offset-md-1 col-md-6 w-100 jumbotron p-2 mb-0" style="font-size:">            
         <center>
 
             <button class="my-1 mx-1 btn-light btn btn-md text-dark {{ $page!='upload'?'':'active' }} panelBtn" btn-type="upload" >Upload Student</button>
             <a href="{{asset('student_upload_format2.csv')}}" class="mt-1 btn-light btn btn-md text-dark " btn-type="upload" >Template File</a>
             <button class="my-1 mx-1 btn-light btn btn-md text-dark {{ $page!='view'?'':'active' }} panelBtn" id ="viewStudent" btn-type="view" >View Students</button>
-            <button class="my-1 mx-1 btn-light btn btn-md text-dark {{ $page!='invoice'?'':'active' }} panelBtn" id ="viewInvoices" btn-type="view" >Invoices</button>
+            <button class="my-1 mx-1 btn-light btn btn-md text-dark {{ $page!='invoice'?'':'active' }} panelBtn" id ="viewInvoices" btn-type="invoices" >Invoices</button>
         </center>
         </div>
         </div>    
@@ -146,46 +146,7 @@ if(isset($_COOKIE['btn-type'])) {
                 </form>
             </div>
             <div btn-type="view" style="display:{{ $page!='view'?'none':'block' }};height:70vh;">
-                <form method="get" action="{{route('mgt_institution_search')}}">
-                    <div class="group-input row">
-                        <div class="col-md-3">
-                            <label>Institution:</label>                            
-                            <select class="form-control ht4" name="institution_id"> 
-                                @foreach($institutions  as $institution)                               
-                                    <option value="{{$institution->id}}">{{$institution->name}}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div class="col-md-3">
-                            <label>Session:</label> 
-                            <select name="session_id" class="form-control ht4">
-                                @foreach($sessions as $session)                               
-                                    <option value="{{$session->id}}" {{ ($session->id == $selected_session)? 'selected':''}}>{{$session->name}}</option>
-                                @endforeach
-                            </select>                        
-                        </div>
-                        <div class="col-md-3">
-                            <label>Search:</label> <input  type="text" class="form-control adx ht4" name="search"><br>
-                        </div>
-                        <div class="col-md-3" style="display: flex;justify-content:space-between;align-items:center;">                            
-                            <button type="submit" class=" mt-2 btn btn-primary add ht4">Go</button>  
-                            <div class="mt-2 mr-2">
-                                {{$students->from}} - {{$students->to}} of {{$students->total}}
-                                @if($students->prev_page_url != null)
-                                <a  href="{{$students->prev_page_url}}" class="btn btn-primary fa fa-chevron-left" style="border-radius: 50% !important;"></a>    
-                                @else
-                                <button disabled class="btn btn-primary fa fa-chevron-left" style="border-radius: 50% !important;"></button>    
-                                @endif
-
-                                @if($students->next_page_url != null)
-                                    <a href="{{$students->next_page_url}}" class="btn btn-primary fa fa-chevron-right" style="border-radius: 50% !important;"></a>    
-                                @else
-                                    <button disabled class="btn btn-primary fa fa-chevron-right" style="border-radius: 50% !important;"></button>    
-                                @endif
-                            </div>                      
-                        </div>                        
-                    </div>
-                </form>
+                @include('layouts.Formsearch',['routename'=>'mgt_institution_search','dataList'=>$students, 'sel_session_id'=>$selected_session,'sel_institution_id'=>$data['selected_institution']])             
                 <table class="table w-100" id="datatableX">
                         <thead>
                             <tr>
@@ -221,8 +182,8 @@ if(isset($_COOKIE['btn-type'])) {
                  </table>
                    
             </div>
-            <div btn-type="viewInvoices" style="display:{{ $page!='view'?'none':'block' }};height:70vh;">
-                
+            <div btn-type="invoices" style="display:{{ $page!='view'?'none':'block' }};height:70vh;">
+                @include('institution.invoices')
             </div>
         </div>
     </div>
@@ -242,6 +203,16 @@ if(isset($_COOKIE['btn-type'])) {
             pageLength : 3,
             initComplete: function (settings, json) {                
                 $("#datatableX_filter").find("input").addClass("form-control ht4").attr("placeholder","Search")
+            }
+        });
+           
+        $("#datatableX2").DataTable({
+            "saveState":true,
+            "lengthChange": false,
+            "language": { search: "" },
+            pageLength : 3,
+            initComplete: function (settings, json) {                
+                $("#datatableX2_filter").find("input").addClass("form-control ht4").attr("placeholder","Search")
             }
         });
     })

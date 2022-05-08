@@ -1,1 +1,0 @@
-<div class="page-breadcrumb" style="padding:1px 5px !important;" ><h2 style="color:#999 !important;"><?php echo $__env->yieldContent('breadcrumb'); ?></h2></div><?php /**PATH C:\Users\User\Desktop\Desktop\eims.ngscha.ni.gov.ng\resources\views/layouts/breadcrumb.blade.php ENDPATH**/ ?>
